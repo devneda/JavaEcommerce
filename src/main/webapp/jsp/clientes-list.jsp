@@ -5,7 +5,7 @@
   Time: 12:55
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/includes/header.jsp" %>
 
@@ -33,7 +33,11 @@
       <c:forEach var="cliente" items="${clientes}">
         <tr>
           <td>${cliente.id}</td>
-          <td>${cliente.nombre}</td>
+          <td>
+            <a href="${pageContext.request.contextPath}/clientes?action=detail&id=${cliente.id}">
+                ${cliente.nombre}
+            </a>
+          </td>
           <td>${cliente.correo}</td>
           <td>${cliente.direccion}</td>
           <td>${cliente.telefono}</td>

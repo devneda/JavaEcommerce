@@ -5,7 +5,7 @@
   Time: 12:56
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/includes/header.jsp" %>
 
@@ -55,7 +55,7 @@
       <label for="image" class="form-label">Nombre de imagen</label>
       <input type="text" class="form-control" id="image" name="image"
              placeholder="ej: m_trekmarlin5.png"
-             value="${bike != null ? bike.image : ''}">
+             value="${bike != null ? bike.image : 'generica.png'}">
     </div>
 
     <div class="col-12">

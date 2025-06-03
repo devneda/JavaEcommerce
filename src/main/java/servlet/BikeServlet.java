@@ -18,7 +18,6 @@ public class BikeServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        super.init();
         try {
             Connection conn = DBConnection.getConnection();
             bikeDAO = new BikeDAO(conn);
@@ -36,7 +35,8 @@ public class BikeServlet extends HttpServlet {
         try {
             switch (action) {
                 case "new":
-                    showNewForm(req, resp);
+                    req.setAttribute("bike", null);
+                    req.getRequestDispatcher("/jsp/bike-form.jsp").forward(req, resp);
                     break;
                 case "edit":
                     showEditForm(req, resp);
@@ -44,12 +44,15 @@ public class BikeServlet extends HttpServlet {
                 case "delete":
                     deleteBike(req, resp);
                     break;
+                case "detail":
+                    showDetail(req, resp);
+                    break;
                 default:
                     listBikes(req, resp);
                     break;
             }
-        } catch (SQLException ex) {
-            throw new ServletException("Error en operación con la base de datos", ex);
+        } catch (SQLException e) {
+            throw new ServletException("Error en operación con bicicletas", e);
         }
     }
 
@@ -60,18 +63,20 @@ public class BikeServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/bikes-list.jsp").forward(req, resp);
     }
 
-    private void showNewForm(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        req.setAttribute("bike", null); // Para usar el mismo formulario
-        req.getRequestDispatcher("/jsp/bike-form.jsp").forward(req, resp);
-    }
-
     private void showEditForm(HttpServletRequest req, HttpServletResponse resp)
             throws SQLException, ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
         Bike bike = bikeDAO.getBikeById(id);
         req.setAttribute("bike", bike);
         req.getRequestDispatcher("/jsp/bike-form.jsp").forward(req, resp);
+    }
+
+    private void showDetail(HttpServletRequest req, HttpServletResponse resp)
+            throws SQLException, ServletException, IOException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        Bike bike = bikeDAO.getBikeById(id);
+        req.setAttribute("bike", bike);
+        req.getRequestDispatcher("/jsp/bike-detail.jsp").forward(req, resp);
     }
 
     private void deleteBike(HttpServletRequest req, HttpServletResponse resp)
@@ -84,6 +89,7 @@ public class BikeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         int id = req.getParameter("id") != null && !req.getParameter("id").isEmpty()
                 ? Integer.parseInt(req.getParameter("id")) : 0;
 

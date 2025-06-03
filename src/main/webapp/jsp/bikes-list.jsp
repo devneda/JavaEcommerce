@@ -18,7 +18,7 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Listado de Bicicletas Trek</h2>
-        <a href="${pageContext.request.contextPath}/bikes/new" class="btn btn-success">
+        <a href="${pageContext.request.contextPath}/bikes?action=new" class="btn btn-success">
             <i class="fa-solid fa-plus"></i> Añadir Bicicleta
         </a>
     </div>
@@ -39,20 +39,28 @@
             <tbody>
             <c:forEach var="bike" items="${bikes}">
                 <tr>
-                    <td>${bike.id}</td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/bikes?action=detail&id=${bike.id}">
+                                ${bike.id}
+                        </a>
+                    </td>
                     <td>
                         <img src="${pageContext.request.contextPath}/images/${bike.image}"
                              alt="${bike.modelo}" width="80" height="50">
                     </td>
-                    <td>${bike.modelo}</td>
+                    <td>
+                        <a href="${pageContext.request.contextPath}/bikes?action=detail&id=${bike.id}">
+                                ${bike.modelo}
+                        </a>
+                    </td>
                     <td>${bike.tipo}</td>
                     <td>${bike.precio}</td>
                     <td>${bike.stock}</td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/bikes/edit?id=${bike.id}" class="btn btn-sm btn-warning">
+                        <a href="${pageContext.request.contextPath}/bikes?action=edit&id=${bike.id}" class="btn btn-sm btn-warning">
                             <i class="fa-solid fa-pen"></i> Editar
                         </a>
-                        <a href="${pageContext.request.contextPath}/bikes/delete?id=${bike.id}" class="btn btn-sm btn-danger"
+                        <a href="${pageContext.request.contextPath}/bikes?action=delete&id=${bike.id}" class="btn btn-sm btn-danger"
                            onclick="return confirm('¿Estás seguro de eliminar esta bicicleta?');">
                             <i class="fa-solid fa-trash"></i> Eliminar
                         </a>

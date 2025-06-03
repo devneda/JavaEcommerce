@@ -22,7 +22,7 @@ public class ClienteServlet extends HttpServlet {
             Connection conn = DBConnection.getConnection();
             clienteDAO = new ClienteDAO(conn);
         } catch (SQLException e) {
-            throw new ServletException("Error al conectar con base de datos", e);
+            throw new ServletException("Error al inicializar ClienteDAO", e);
         }
     }
 
@@ -35,43 +35,65 @@ public class ClienteServlet extends HttpServlet {
         try {
             switch (action) {
                 case "new":
-                    req.setAttribute("cliente", null);
-                    req.getRequestDispatcher("/jsp/cliente-form.jsp").forward(req, resp);
+                    showForm(req, resp, null);
                     break;
                 case "edit":
-                    int id = Integer.parseInt(req.getParameter("id"));
-                    Cliente cliente = clienteDAO.getClienteById(id);
-                    req.setAttribute("cliente", cliente);
-                    req.getRequestDispatcher("/jsp/cliente-form.jsp").forward(req, resp);
+                    int idToEdit = Integer.parseInt(req.getParameter("id"));
+                    Cliente clienteToEdit = clienteDAO.getClienteById(idToEdit);
+                    showForm(req, resp, clienteToEdit);
                     break;
                 case "delete":
-                    clienteDAO.deleteCliente(Integer.parseInt(req.getParameter("id")));
+                    int idToDelete = Integer.parseInt(req.getParameter("id"));
+                    clienteDAO.deleteCliente(idToDelete);
                     resp.sendRedirect("clientes");
                     break;
-                default:
-                    List<Cliente> clientes = clienteDAO.getAllClientes();
-                    req.setAttribute("clientes", clientes);
-                    req.getRequestDispatcher("/jsp/clientes-list.jsp").forward(req, resp);
+                case "detail":
+                    showDetail(req, resp);
                     break;
+                default:
+                    listClientes(req, resp);
             }
         } catch (Exception e) {
-            throw new ServletException(e);
+            throw new ServletException("Error en ClienteServlet", e);
         }
+    }
+
+    private void listClientes(HttpServletRequest req, HttpServletResponse resp)
+            throws SQLException, ServletException, IOException {
+        List<Cliente> clientes = clienteDAO.getAllClientes();
+        req.setAttribute("clientes", clientes);
+        req.getRequestDispatcher("/jsp/clientes-list.jsp").forward(req, resp);
+    }
+
+    private void showForm(HttpServletRequest req, HttpServletResponse resp, Cliente cliente)
+            throws ServletException, IOException {
+        req.setAttribute("cliente", cliente);
+        req.getRequestDispatcher("/jsp/cliente-form.jsp").forward(req, resp);
+    }
+
+    private void showDetail(HttpServletRequest req, HttpServletResponse resp)
+            throws SQLException, ServletException, IOException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        Cliente cliente = clienteDAO.getClienteById(id);
+        req.setAttribute("cliente", cliente);
+        req.getRequestDispatcher("/jsp/cliente-detail.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+
         int id = req.getParameter("id") != null && !req.getParameter("id").isEmpty()
                 ? Integer.parseInt(req.getParameter("id")) : 0;
 
-        Cliente cliente = new Cliente(
-                id,
-                req.getParameter("nombre"),
-                req.getParameter("correo"),
-                req.getParameter("direccion"),
-                req.getParameter("telefono")
-        );
+        String nombre = req.getParameter("nombre");
+        String email = req.getParameter("email");
+        String direccion = req.getParameter("direccion");
+        String telefono = req.getParameter("telefono");
+
+        Cliente cliente = new Cliente(id, nombre, email, direccion, telefono);
+
 
         try {
             if (id == 0) {

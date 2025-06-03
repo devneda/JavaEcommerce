@@ -17,7 +17,8 @@ id INT AUTO_INCREMENT PRIMARY KEY,
 modelo VARCHAR(100),
 tipo VARCHAR(50),
 precio DECIMAL(10,2),
-stock INT
+stock INT,
+image VARCHAR(150)
 );
 
 -- Tabla de órdenes
@@ -51,22 +52,22 @@ INSERT INTO clientes (nombre, correo, direccion, telefono) VALUES
 ('Héctor Peña', 'hector@example.com', 'Calle del Río 5', '5556789016');
 
 -- Insertar datos en bicicletas
-INSERT INTO bicicletas (modelo, tipo, precio, stock) VALUES
-('Trek Marlin 5', 'Montaña', 599.99, 10),
-('Trek Domane AL 2', 'Carretera', 899.99, 8),
-('Trek FX 3 Disc', 'Híbrida', 799.99, 12),
-('Trek Dual Sport 2', 'Híbrida', 749.99, 15),
-('Trek Verve 1', 'Urbana', 549.99, 20),
-('Trek Marlin 7', 'Montaña', 849.99, 5),
-('Trek Emonda ALR 5', 'Carretera', 1799.99, 3),
-('Trek Powerfly FS 4', 'Eléctrica', 4599.99, 2),
-('Trek Rail 7', 'Eléctrica', 6299.99, 1),
-('Trek 820', 'Montaña', 469.99, 25),
-('Trek FX 2 Disc', 'Híbrida', 699.99, 18),
-('Trek Roscoe 7', 'Montaña', 1349.99, 4),
-('Trek Domane SL 5', 'Carretera', 2999.99, 2),
-('Trek Precaliber 24', 'Infantil', 399.99, 6),
-('Trek Verve+ 2', 'Eléctrica', 2699.99, 3);
+INSERT INTO bicicletas (modelo, tipo, precio, stock, image) VALUES
+('Trek Marlin 5', 'Montaña', 599.99, 10, 'm_trekmarlin5.png'),
+('Trek Domane AL 2', 'Carretera', 899.99, 8, 'c_trekdomaneal2.png'),
+('Trek FX 3 Disc', 'Híbrida', 799.99, 12, 'h_trekfx3disc.png'),
+('Trek Dual Sport 2', 'Híbrida', 749.99, 15, 'h_trekdualsport2.png'),
+('Trek Verve 1', 'Urbana', 549.99, 20, 'u_trekverve1.png'),
+('Trek Marlin 7', 'Montaña', 849.99, 5, 'm_trekmarlin7.png'),
+('Trek Emonda ALR 5', 'Carretera', 1799.99, 3, 'c_trekemondaalr5.png'),
+('Trek Powerfly FS 4', 'Eléctrica', 4599.99, 2, 'e_trekpowerflyfs4.png'),
+('Trek Rail 7', 'Eléctrica', 6299.99, 1, 'e_trekrail7.png'),
+('Trek 820', 'Montaña', 469.99, 25, 'm_trek820.png'),
+('Trek FX 2 Disc', 'Híbrida', 699.99, 18, 'h_trekfx2disc.png'),
+('Trek Roscoe 7', 'Montaña', 1349.99, 4, 'm_trekroscoe7.png'),
+('Trek Domane SL 5', 'Carretera', 2999.99, 2, 'c_trekdomanesl5.png'),
+('Trek Precaliber 24', 'Infantil', 399.99, 6, 'i_trekprecaliber24.png'),
+('Trek Verve+ 2', 'Eléctrica', 2699.99, 3, 'e_trekverve+2.png');
 
 -- Insertar datos en órdenes
 INSERT INTO ordenes (cliente_id, bicicleta_id, fecha, cantidad, total) VALUES
