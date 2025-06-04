@@ -2,6 +2,16 @@
 CREATE DATABASE IF NOT EXISTS ecommerce_trek;
 USE ecommerce_trek;
 
+-- Tabla de usuarios para login
+CREATE TABLE usuarios (
+id INT AUTO_INCREMENT PRIMARY KEY,
+username VARCHAR(50) NOT NULL UNIQUE,
+email VARCHAR(100) NOT NULL UNIQUE,
+password_hash VARCHAR(255) NOT NULL,
+rol ENUM('cliente', 'admin') NOT NULL DEFAULT 'cliente',
+creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Tabla de clientes
 CREATE TABLE clientes (
 id INT AUTO_INCREMENT PRIMARY KEY,

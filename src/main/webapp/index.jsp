@@ -8,6 +8,13 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ include file="/includes/header.jsp" %>
 
+<%
+    if (session.getAttribute("usuarioLogueado") == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+%>
+
 <section class="hero text-center">
     <div class="container">
         <h1 class="display-4">Bienvenido a Trek Bikes Shop</h1>
