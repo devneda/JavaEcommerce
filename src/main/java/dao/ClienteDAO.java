@@ -81,4 +81,38 @@ public class ClienteDAO {
             stmt.executeUpdate();
         }
     }
+
+    public int getLastInsertId() throws SQLException {
+        String sql = "SELECT LAST_INSERT_ID()";
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return -1;
+    }
+
+    private Cliente mapRowToCliente(ResultSet rs) throws SQLException {
+        Cliente cliente = new Cliente();
+        cliente.setId(rs.getInt("id"));
+        cliente.setNombre(rs.getString("nombre"));
+        cliente.setCorreo(rs.getString("correo"));
+        cliente.setDireccion(rs.getString("direccion"));
+        cliente.setTelefono(rs.getString("telefono"));
+        return cliente;
+    }
+
+    public Cliente getClienteByEmail(String email) throws SQLException {
+        String sql = "SELECT * FROM clientes WHERE correo = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToCliente(rs);
+                }
+            }
+        }
+        return null;
+    }
 }

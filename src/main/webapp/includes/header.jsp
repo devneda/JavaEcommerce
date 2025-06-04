@@ -60,6 +60,14 @@
           </a>
         </li>
       </ul>
+      <div class="d-flex align-items-center ms-auto">
+        <c:if test="${not empty sessionScope.usuarioLogueado}">
+          <span class="me-2 text-white">Hola, ${sessionScope.usuarioLogueado.username}</span>
+          <form action="${pageContext.request.contextPath}/logout" method="get" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
+          </form>
+        </c:if>
+      </div>
     </div>
   </div>
 </nav>

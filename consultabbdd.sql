@@ -18,7 +18,7 @@ id INT AUTO_INCREMENT PRIMARY KEY,
 nombre VARCHAR(100),
 correo VARCHAR(100),
 direccion TEXT,
-telefono VARCHAR(15)
+telefono VARCHAR(15),
 );
 
 -- Tabla de bicicletas
@@ -97,4 +97,9 @@ INSERT INTO ordenes (cliente_id, bicicleta_id, fecha, cantidad, total) VALUES
 (14, 14, NOW(), 2, 799.98),
 (15, 15, NOW(), 1, 2699.99);
 
--- ¡Listo! Base de datos ecommerce_trek creada con 3 tablas y más de 15 datos en cada una.
+-- MODIFICACION DE LA TABLA usuarios para añadir cliente ID
+ALTER TABLE usuarios ADD cliente_id INT;
+
+ALTER TABLE usuarios
+    ADD CONSTRAINT fk_usuario_cliente
+        FOREIGN KEY (cliente_id) REFERENCES clientes(id);

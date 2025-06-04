@@ -6,14 +6,16 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%@ include file="/includes/header.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%
     if (session.getAttribute("usuarioLogueado") == null) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/login");
         return;
     }
 %>
+
+<%@ include file="/includes/header.jsp" %>
 
 <section class="hero text-center">
     <div class="container">
@@ -27,8 +29,10 @@
               class="row g-2 justify-content-center">
             <div class="col-auto">
                 <select name="type" class="form-select">
+                    <c:if test="${sessionScope.usuarioLogueado.rol == 'admin'}">
+                        <option value="cliente">Clientes</option>
+                    </c:if>
                     <option value="bike">Bicicletas</option>
-                    <option value="cliente">Clientes</option>
                     <option value="orden">Órdenes</option>
                 </select>
             </div>
@@ -51,6 +55,8 @@
 
     <div class="container py-5">
         <div class="row g-4">
+
+            <!-- Bicicletas (clientes y admins) -->
             <div class="col-md-4">
                 <div class="card h-100 card-hover shadow-sm">
                     <img src="${pageContext.request.contextPath}/images/bike.png"
@@ -68,23 +74,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card h-100 card-hover shadow-sm">
-                    <img src="${pageContext.request.contextPath}/images/cliente.png"
-                         class="card-img-top" alt="Clientes">
-                    <div class="card-body">
-                        <h5 class="card-title">Clientes</h5>
-                        <p class="card-text">Gestiona tu base de clientes fácilmente.</p>
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <a href="${pageContext.request.contextPath}/clientes"
-                           class="btn btn-dark">
-                            Ver clientes <i class="fa-solid fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
+            <!-- Órdenes (clientes y admins) -->
             <div class="col-md-4">
                 <div class="card h-100 card-hover shadow-sm">
                     <img src="${pageContext.request.contextPath}/images/orden.png"
@@ -101,6 +91,27 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Clientes (solo para admin) -->
+            <c:if test="${sessionScope.usuarioLogueado.rol == 'admin'}">
+                <div class="col-md-4">
+                    <div class="card h-100 card-hover shadow-sm">
+                        <img src="${pageContext.request.contextPath}/images/cliente.png"
+                             class="card-img-top" alt="Clientes">
+                        <div class="card-body">
+                            <h5 class="card-title">Clientes</h5>
+                            <p class="card-text">Gestiona tu base de clientes fácilmente.</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="${pageContext.request.contextPath}/clientes"
+                               class="btn btn-dark">
+                                Ver clientes <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </c:if>
+
         </div>
     </div>
 </section>

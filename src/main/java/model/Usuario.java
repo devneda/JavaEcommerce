@@ -6,15 +6,17 @@ public class Usuario {
     private String email;
     private String passwordHash;
     private String rol;
+    private Integer clienteId;
 
     public Usuario() {}
 
-    public Usuario(int id, String username, String email, String passwordHash, String rol) {
+    public Usuario(int id, String username, String email, String passwordHash, String rol, Integer clienteId) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
         this.rol = rol;
+        this.clienteId = clienteId;
     }
 
     // Getters y Setters
@@ -37,6 +39,14 @@ public class Usuario {
     public String getRol() { return rol; }
 
     public void setRol(String rol) { this.rol = rol; }
+
+    public Integer getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Integer clienteId) {
+        this.clienteId = clienteId;
+    }
 
     @Override
     public String toString() {

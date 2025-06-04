@@ -23,12 +23,17 @@ public class UsuarioDAO {
     }
 
     public void insertUsuario(Usuario user) throws SQLException {
-        String sql = "INSERT INTO usuarios (username, email, password_hash, rol) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (username, email, password_hash, rol, cliente_id) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPasswordHash());
             stmt.setString(4, user.getRol());
+            if (user.getClienteId() != null) {
+                stmt.setInt(5, user.getClienteId());
+            } else {
+                stmt.setNull(5, Types.INTEGER);
+            }
             stmt.executeUpdate();
         }
     }
@@ -49,7 +54,8 @@ public class UsuarioDAO {
                 rs.getString("username"),
                 rs.getString("email"),
                 rs.getString("password_hash"),
-                rs.getString("rol")
+                rs.getString("rol"),
+                rs.getInt("cliente_id")
         );
     }
 }

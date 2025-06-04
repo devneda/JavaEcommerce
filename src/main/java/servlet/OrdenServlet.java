@@ -6,6 +6,7 @@ import dao.OrdenDAO;
 import model.Bike;
 import model.Cliente;
 import model.Orden;
+import model.Usuario;
 import utils.DBConnection;
 
 import javax.servlet.ServletException;
@@ -38,25 +39,48 @@ public class OrdenServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        Usuario user = (Usuario) req.getSession().getAttribute("usuarioLogueado");
+        if (user == null) {
+            resp.sendRedirect("login");
+            return;
+        }
+
         String action = req.getParameter("action");
         if (action == null) action = "list";
 
         try {
             switch (action) {
                 case "new":
+                    if (!"admin".equals(user.getRol())) {
+                        resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+                        return;
+                    }
                     req.setAttribute("clientes", clienteDAO.getAllClientes());
                     req.setAttribute("bicicletas", bikeDAO.getAllBikes());
                     req.getRequestDispatcher("/jsp/orden-form.jsp").forward(req, resp);
                     break;
+
                 case "delete":
+                    if (!"admin".equals(user.getRol())) {
+                        resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+                        return;
+                    }
                     ordenDAO.deleteOrden(Integer.parseInt(req.getParameter("id")));
                     resp.sendRedirect("ordenes");
                     break;
+
                 case "detail":
-                    showDetail(req, resp);
+                    showDetail(req, resp, user);
                     break;
+
                 default:
-                    List<Orden> ordenes = ordenDAO.getAllOrdenes();
+                    List<Orden> ordenes;
+                    if ("admin".equals(user.getRol())) {
+                        ordenes = ordenDAO.getAllOrdenes();
+                    } else {
+                        ordenes = ordenDAO.getOrdenesByCliente(user.getClienteId());
+                    }
                     req.setAttribute("ordenes", ordenes);
                     req.getRequestDispatcher("/jsp/ordenes-list.jsp").forward(req, resp);
                     break;
@@ -66,10 +90,21 @@ public class OrdenServlet extends HttpServlet {
         }
     }
 
-    private void showDetail(HttpServletRequest req, HttpServletResponse resp)
+    private void showDetail(HttpServletRequest req, HttpServletResponse resp, Usuario user)
             throws SQLException, ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
         Orden orden = ordenDAO.getOrdenById(id);
+
+        if (orden == null) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        if (!"admin".equals(user.getRol()) && orden.getClienteId() != user.getClienteId()) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "No autorizado a ver esta orden.");
+            return;
+        }
+
         Cliente cliente = clienteDAO.getClienteById(orden.getClienteId());
         Bike bike = bikeDAO.getBikeById(orden.getBicicletaId());
 
@@ -82,6 +117,13 @@ public class OrdenServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        Usuario user = (Usuario) req.getSession().getAttribute("usuarioLogueado");
+        if (user == null || !"admin".equals(user.getRol())) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         int clienteId = Integer.parseInt(req.getParameter("clienteId"));
         int bicicletaId = Integer.parseInt(req.getParameter("bicicletaId"));
         int cantidad = Integer.parseInt(req.getParameter("cantidad"));
@@ -89,6 +131,7 @@ public class OrdenServlet extends HttpServlet {
         double total = precioUnitario * cantidad;
 
         Orden orden = new Orden(0, clienteId, bicicletaId, new Date(), cantidad, total);
+        orden.setUsuarioId(user.getId()); // Admin que registró la orden
 
         try {
             ordenDAO.insertOrden(orden);

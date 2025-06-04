@@ -9,6 +9,7 @@ public class Orden {
     private Date fecha;
     private int cantidad;
     private double total;
+    private int usuarioId;
 
     public Orden() {
     }
@@ -40,4 +41,12 @@ public class Orden {
 
     public double getTotal() { return total; }
     public void setTotal(double total) { this.total = total; }
+
+    public int getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
+    }
 }

@@ -51,6 +51,14 @@
       <input type="password" class="form-control" name="password" required>
     </div>
 
+    <div class="mb-3">
+      <label for="rol" class="form-label">Tipo de usuario</label>
+      <select name="rol" class="form-select" required>
+        <option value="cliente">Cliente</option>
+        <option value="admin">Administrador</option>
+      </select>
+    </div>
+
     <div class="d-grid gap-2">
       <button type="submit" class="btn btn-success">Registrarse</button>
       <a href="${pageContext.request.contextPath}/login" class="btn btn-outline-secondary">Volver al login</a>
