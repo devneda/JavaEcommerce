@@ -54,7 +54,7 @@
     </div>
 
     <div class="container py-5">
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
 
             <!-- Bicicletas (clientes y admins) -->
             <div class="col-md-4">

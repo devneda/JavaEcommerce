@@ -52,12 +52,17 @@ public class OrdenServlet extends HttpServlet {
         try {
             switch (action) {
                 case "new":
-                    if (!"admin".equals(user.getRol())) {
+                    if ("admin".equals(user.getRol())) {
+                        req.setAttribute("clientes", clienteDAO.getAllClientes());
+                        req.setAttribute("bicicletas", bikeDAO.getAllBikes());
+                    } else if ("cliente".equals(user.getRol())) {
+                        int idBici = Integer.parseInt(req.getParameter("idBici"));
+                        req.setAttribute("cliente", clienteDAO.getClienteById(user.getClienteId()));
+                        req.setAttribute("bicicleta", bikeDAO.getBikeById(idBici));
+                    } else {
                         resp.sendError(HttpServletResponse.SC_FORBIDDEN);
                         return;
                     }
-                    req.setAttribute("clientes", clienteDAO.getAllClientes());
-                    req.setAttribute("bicicletas", bikeDAO.getAllBikes());
                     req.getRequestDispatcher("/jsp/orden-form.jsp").forward(req, resp);
                     break;
 
@@ -119,26 +124,39 @@ public class OrdenServlet extends HttpServlet {
             throws ServletException, IOException {
 
         Usuario user = (Usuario) req.getSession().getAttribute("usuarioLogueado");
-        if (user == null || !"admin".equals(user.getRol())) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+        if (user == null) {
+            resp.sendRedirect("login");
             return;
         }
 
-        int clienteId = Integer.parseInt(req.getParameter("clienteId"));
-        int bicicletaId = Integer.parseInt(req.getParameter("bicicletaId"));
-        int cantidad = Integer.parseInt(req.getParameter("cantidad"));
-        double precioUnitario = Double.parseDouble(req.getParameter("precio"));
-        double total = precioUnitario * cantidad;
-
-        Orden orden = new Orden(0, clienteId, bicicletaId, new Date(), cantidad, total);
-        orden.setUsuarioId(user.getId()); // Admin que registró la orden
-
         try {
+            int clienteId;
+            if ("admin".equals(user.getRol())) {
+                clienteId = Integer.parseInt(req.getParameter("clienteId"));
+            } else if ("cliente".equals(user.getRol())) {
+                clienteId = user.getClienteId();
+            } else {
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            int bicicletaId = Integer.parseInt(req.getParameter("bicicletaId"));
+            int cantidad = Integer.parseInt(req.getParameter("cantidad"));
+            double precioUnitario = Double.parseDouble(req.getParameter("precio"));
+            double total = precioUnitario * cantidad;
+
+            Orden orden = new Orden(0, clienteId, bicicletaId, new Date(), cantidad, total);
+            orden.setUsuarioId(user.getId()); // Usuario que realizó el pedido
+
             ordenDAO.insertOrden(orden);
+
+            resp.sendRedirect("ordenes");
+
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parámetros inválidos");
         } catch (SQLException e) {
             throw new ServletException("Error al guardar la orden", e);
         }
-
-        resp.sendRedirect("ordenes");
     }
+
 }

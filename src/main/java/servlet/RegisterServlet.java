@@ -44,7 +44,7 @@ public class RegisterServlet extends HttpServlet {
         // Hash de la contraseña
         String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        int clienteId = 0;
+        Integer clienteId = null;
 
         if ("cliente".equals(rol)) {
             try {
@@ -56,7 +56,6 @@ public class RegisterServlet extends HttpServlet {
                     cliente.setCorreo(email);
                     cliente.setDireccion("");
                     cliente.setTelefono("");
-
                     clienteDAO.insertCliente(cliente);
                 }
                 clienteId = cliente.getId();

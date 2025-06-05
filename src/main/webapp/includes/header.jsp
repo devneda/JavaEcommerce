@@ -49,11 +49,13 @@
             <i class="fa-solid fa-mountain"></i> Bicicletas
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="${pageContext.request.contextPath}/clientes">
-            <i class="fa-solid fa-user"></i> Clientes
-          </a>
-        </li>
+        <c:if test="${sessionScope.usuarioLogueado.rol == 'admin'}">
+          <li class="nav-item">
+            <a class="nav-link" href="${pageContext.request.contextPath}/clientes">
+              <i class="fa-solid fa-user"></i> Clientes
+            </a>
+          </li>
+        </c:if>
         <li class="nav-item">
           <a class="nav-link" href="${pageContext.request.contextPath}/ordenes">
             <i class="fa-solid fa-receipt"></i> Órdenes

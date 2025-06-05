@@ -57,14 +57,26 @@
                     <td>${bike.precio}</td>
                     <td>${bike.stock}</td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/bikes?action=edit&id=${bike.id}" class="btn btn-sm btn-warning">
-                            <i class="fa-solid fa-pen"></i> Editar
-                        </a>
-                        <a href="${pageContext.request.contextPath}/bikes?action=delete&id=${bike.id}" class="btn btn-sm btn-danger"
-                           onclick="return confirm('¿Estás seguro de eliminar esta bicicleta?');">
-                            <i class="fa-solid fa-trash"></i> Eliminar
-                        </a>
+                        <!-- TODO diferenciar los botones para usuario admin y para usuario cliente -> el cliente no debe modificar ni eliminar bicis -->
+                        <!-- Si el usuario es admin, le muestro sus botones para editar y eliminar bicis -->
+                        <c:if test="${sessionScope.usuarioLogueado.rol == 'admin'}">
+                            <a href="${pageContext.request.contextPath}/bikes?action=edit&id=${bike.id}" class="btn btn-sm btn-warning">
+                                <i class="fa-solid fa-pen"></i> Editar
+                            </a>
+                            <a href="${pageContext.request.contextPath}/bikes?action=delete&id=${bike.id}" class="btn btn-sm btn-danger"
+                               onclick="return confirm('¿Estás seguro de eliminar esta bicicleta?');">
+                                <i class="fa-solid fa-trash"></i> Eliminar
+                            </a>
+                        </c:if>
+
+                        <!-- Si es tipo cliente, solo le muestro nuevo boton 'Comprar' -->
+                        <c:if test="${sessionScope.usuarioLogueado.rol == 'cliente'}">
+                            <a href="${pageContext.request.contextPath}/ordenes?action=new&idBici=${bike.id}" class="btn btn-sm btn-success">
+                                <i class="fa-solid fa-cart-plus"></i> Comprar
+                            </a>
+                        </c:if>
                     </td>
+
                 </tr>
             </c:forEach>
             </tbody>
