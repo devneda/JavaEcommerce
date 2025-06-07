@@ -1,6 +1,8 @@
 package dao;
 
 import model.Bike;
+import utils.DBConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,5 +103,24 @@ public class BikeDAO {
         bike.setStock(rs.getInt("stock"));
         bike.setImage(rs.getString("image"));
         return bike;
+    }
+
+    //
+    public List<Bike> buscarPorModeloOTipo(String query) {
+        List<Bike> lista = new ArrayList<>();
+        try (Connection con = DBConnection.getConnection()) {
+            String sql = "SELECT * FROM bicicletas WHERE LOWER(modelo) LIKE ? OR LOWER(tipo) LIKE ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            String wildcardQuery = "%" + query.toLowerCase() + "%";
+            ps.setString(1, wildcardQuery);
+            ps.setString(2, wildcardQuery);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                lista.add(mapRowToBike(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
     }
 }

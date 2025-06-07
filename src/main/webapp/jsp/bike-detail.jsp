@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/includes/header.jsp" %>
 
 <%
@@ -31,3 +32,21 @@
       <ul class="list-group list-group-flush mb-3">
         <li class="list-group-item"><strong>Tipo:</strong> ${bike.tipo}</li>
         <li class="list-group-item"><strong>Precio:</strong> €${bike.precio}</li>
+      </ul>
+
+      <div class="mt-4">
+        <!-- Botón para comprar (solo clientes) -->
+        <c:if test="${sessionScope.usuarioLogueado.rol == 'cliente'}">
+          <a href="${pageContext.request.contextPath}/ordenes?action=new&idBici=${bike.id}" class="btn btn-success me-2">
+            <i class="fa-solid fa-cart-plus"></i> Comprar
+          </a>
+        </c:if>
+
+        <!-- Botón para volver atrás -->
+        <a href="${pageContext.request.contextPath}/bikes" class="btn btn-secondary">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

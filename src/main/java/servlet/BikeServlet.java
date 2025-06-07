@@ -58,8 +58,17 @@ public class BikeServlet extends HttpServlet {
 
     private void listBikes(HttpServletRequest req, HttpServletResponse resp)
             throws SQLException, ServletException, IOException {
-        List<Bike> bikes = bikeDAO.getAllBikes();
-        req.setAttribute("bikes", bikes);
+
+        String query = req.getParameter("query");
+        List<Bike> lista;
+
+        if (query != null && !query.trim().isEmpty()) {
+            lista = bikeDAO.buscarPorModeloOTipo(query);
+        } else {
+            lista = bikeDAO.getAllBikes();
+        }
+
+        req.setAttribute("bikes", lista);
         req.getRequestDispatcher("/jsp/bikes-list.jsp").forward(req, resp);
     }
 

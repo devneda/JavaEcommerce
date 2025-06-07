@@ -23,36 +23,6 @@
         <p class="lead">Explora, pedalea, conquista.</p>
     </div>
 
-    <div class="container py-3">
-        <form action="${pageContext.request.contextPath}/search"
-              method="get"
-              class="row g-2 justify-content-center">
-            <div class="col-auto">
-                <select name="type" class="form-select">
-                    <c:if test="${sessionScope.usuarioLogueado.rol == 'admin'}">
-                        <option value="cliente">Clientes</option>
-                    </c:if>
-                    <option value="bike">Bicicletas</option>
-                    <option value="orden">Órdenes</option>
-                </select>
-            </div>
-
-            <div class="col-auto">
-                <input type="text"
-                       name="keyword"
-                       class="form-control"
-                       placeholder="Buscar por nombre o modelo…"
-                       required />
-            </div>
-
-            <div class="col-auto">
-                <button type="submit" class="btn btn-dark">
-                    Buscar
-                </button>
-            </div>
-        </form>
-    </div>
-
     <div class="container py-5">
         <div class="row g-4 justify-content-center">
 

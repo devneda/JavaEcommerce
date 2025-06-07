@@ -18,9 +18,20 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Listado de Bicicletas Trek</h2>
-        <a href="${pageContext.request.contextPath}/bikes?action=new" class="btn btn-success">
-            <i class="fa-solid fa-plus"></i> Añadir Bicicleta
-        </a>
+        <!-- TODO cuadro de búsqueda -->
+        <form class="d-flex justify-content-end mb-3" method="GET">
+            <div class="input-group" style="max-width: 300px;">
+                <input type="text" class="form-control" name="query" placeholder="Buscar" value="${param.query}">
+                <button type="submit" class="btn btn-dark">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+
+        <c:if test="${sessionScope.usuarioLogueado.rol == 'admin'}">
+            <a href="${pageContext.request.contextPath}/bikes?action=new" class="btn btn-success"><i class="fa-solid fa-plus"></i> Añadir Bicicleta
+            </a>
+        </c:if>
     </div>
 
     <div class="table-responsive">
