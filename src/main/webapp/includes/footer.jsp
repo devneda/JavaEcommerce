@@ -11,7 +11,7 @@
   <div class="container">
     <span>
       © 2025 <strong>Trek Bikes Shop</strong> — Rueda con estilo 🚴 |
-      <a href="https://github.com/tuusuario/tu-repo-ecommerce" class="footer-link" target="_blank">GitHub</a> ·
+      <a href="https://github.com/devneda/JavaEcommerce.git" class="footer-link" target="_blank">GitHub</a> ·
       <a href="#">Términos</a>
     </span>
   </div>
