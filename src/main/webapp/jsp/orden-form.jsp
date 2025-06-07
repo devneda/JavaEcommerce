@@ -17,9 +17,12 @@
 %>
 
 <div class="container py-5">
-  <h2 class="mb-4">Registrar Nueva Orden</h2>
+  <h2 class="mb-4">${orden != null ? "Editar Orden" : "Registrar Nueva Orden"}</h2>
 
   <form action="${pageContext.request.contextPath}/ordenes" method="post" class="row g-3">
+    <c:if test="${not empty orden}">
+      <input type="hidden" name="id" value="${orden.id}" />
+    </c:if>
 
     <!-- Cliente -->
     <c:choose>
@@ -29,7 +32,9 @@
           <select name="clienteId" id="clienteId" class="form-select" required>
             <option value="">Selecciona un cliente</option>
             <c:forEach var="c" items="${clientes}">
-              <option value="${c.id}">${c.nombre}</option>
+              <option value="${c.id}" ${orden != null && orden.clienteId == c.id ? "selected" : ""}>
+                  ${c.nombre}
+              </option>
             </c:forEach>
           </select>
         </div>
@@ -51,7 +56,7 @@
           <select name="bicicletaId" id="bicicletaId" class="form-select" required onchange="updatePrecio()">
             <option value="">Selecciona una bicicleta</option>
             <c:forEach var="b" items="${bicicletas}">
-              <option value="${b.id}" data-precio="${b.precio}">
+              <option value="${b.id}" data-precio="${b.precio}" ${orden != null && orden.bicicletaId == b.id ? "selected" : ""}>
                   ${b.modelo} - €${b.precio}
               </option>
             </c:forEach>
@@ -71,31 +76,32 @@
     <!-- Cantidad -->
     <div class="col-md-4">
       <label for="cantidad" class="form-label">Cantidad</label>
-      <input type="number" class="form-control" id="cantidad" name="cantidad" value="1" min="1" required onchange="updateTotal()">
+      <input type="number" class="form-control" id="cantidad" name="cantidad"
+             value="${orden != null ? orden.cantidad : 1}" min="1" required onchange="updateTotal()">
     </div>
 
     <!-- Precio unitario (solo admin) -->
     <c:if test="${sessionScope.usuarioLogueado.rol == 'admin'}">
       <div class="col-md-4">
         <label for="precio" class="form-label">Precio unitario (€)</label>
-        <input type="number" class="form-control" id="precio" name="precio" step="0.01" readonly required>
+        <input type="number" class="form-control" id="precio" name="precio" step="0.01"
+               value="${orden != null ? orden.total / orden.cantidad : ''}" readonly required>
       </div>
     </c:if>
 
     <!-- Total -->
     <div class="col-md-4">
       <label for="total" class="form-label">Total (€)</label>
-      <input type="text" class="form-control" id="total" readonly>
+      <input type="text" class="form-control" id="total" value="0.00" readonly>
     </div>
 
     <!-- Botón enviar -->
     <div class="col-md-12 d-flex justify-content-end">
       <button type="submit" class="btn btn-primary">
-        <i class="fa-solid fa-cart-plus"></i> Guardar Orden
+        <i class="fa-solid fa-cart-plus"></i> ${orden != null ? "Actualizar" : "Guardar"} Orden
       </button>
     </div>
   </form>
-
 </div>
 
 <script>
@@ -116,8 +122,9 @@
     document.getElementById('total').value = total.toFixed(2);
   }
 
-  // Ejecutar al cargar por si hay precio ya precargado (cliente)
-  window.onload = updateTotal;
+  window.onload = function () {
+    if (document.getElementById('precio')) updateTotal();
+  };
 </script>
 
 <%@ include file="/includes/footer.jsp" %>

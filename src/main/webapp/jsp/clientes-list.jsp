@@ -12,13 +12,11 @@
 <div class="container py-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Listado de Clientes</h2>
-    <form class="d-flex justify-content-end mb-3" method="GET">
-      <div class="input-group" style="max-width: 300px;">
-        <input type="text" class="form-control" name="query" placeholder="Buscar" value="${param.query}">
-        <button type="submit" class="btn btn-dark">
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
+    <form class="d-flex" method="get">
+      <input type="text" class="form-control me-2" name="query" placeholder="Buscar" value="${param.query}">
+      <button type="submit" class="btn btn-dark">
+        <i class="bi bi-search"></i>
+      </button>
     </form>
     <a href="${pageContext.request.contextPath}/clientes?action=new" class="btn btn-success">
       <i class="fa-solid fa-plus"></i> Añadir Cliente

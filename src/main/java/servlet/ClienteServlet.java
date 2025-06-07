@@ -60,7 +60,15 @@ public class ClienteServlet extends HttpServlet {
 
     private void listClientes(HttpServletRequest req, HttpServletResponse resp)
             throws SQLException, ServletException, IOException {
-        List<Cliente> clientes = clienteDAO.getAllClientes();
+        String query = req.getParameter("query");
+        List<Cliente> clientes;
+
+        if (query != null && !query.trim().isEmpty()) {
+            clientes = clienteDAO.buscarPorNombreOCorreo(query);
+        } else {
+            clientes = clienteDAO.getAllClientes();
+        }
+
         req.setAttribute("clientes", clientes);
         req.getRequestDispatcher("/jsp/clientes-list.jsp").forward(req, resp);
     }
@@ -88,12 +96,11 @@ public class ClienteServlet extends HttpServlet {
                 ? Integer.parseInt(req.getParameter("id")) : 0;
 
         String nombre = req.getParameter("nombre");
-        String email = req.getParameter("email");
+        String correo = req.getParameter("correo");
         String direccion = req.getParameter("direccion");
         String telefono = req.getParameter("telefono");
 
-        Cliente cliente = new Cliente(id, nombre, email, direccion, telefono);
-
+        Cliente cliente = new Cliente(id, nombre, correo, direccion, telefono);
 
         try {
             if (id == 0) {

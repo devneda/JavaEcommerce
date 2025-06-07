@@ -9,36 +9,58 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/includes/header.jsp" %>
 
-<%
-  model.Orden orden = (model.Orden) request.getAttribute("orden");
-  model.Cliente cliente = (model.Cliente) request.getAttribute("cliente");
-  model.Bike bike = (model.Bike) request.getAttribute("bike");
-%>
-
 <div class="container py-5">
-  <h2 class="mb-4">Detalle de Pedido #${orden.id}</h2>
+  <h2 class="mb-4">Detalle de Orden #${orden.id}</h2>
 
-  <div class="card mb-4">
-    <div class="card-header fw-bold">Datos del Cliente</div>
+  <div class="card shadow-sm">
     <div class="card-body">
-      <p><strong>Nombre:</strong> ${cliente.nombre}</p>
-      <p><strong>Correo:</strong> ${cliente.correo}</p>
-      <p><strong>Dirección:</strong> ${cliente.direccion}</p>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h5 class="card-title">Cliente</h5>
+          <p class="card-text">
+            <strong>Nombre:</strong> ${cliente.nombre} <br>
+            <strong>Email:</strong> ${cliente.correo} <br>
+            <strong>Teléfono:</strong> ${cliente.telefono}
+          </p>
+        </div>
+        <div class="col-md-6">
+          <h5 class="card-title">Bicicleta</h5>
+          <p class="card-text">
+            <strong>Modelo:</strong> ${bike.modelo} <br>
+            <strong>Tipo:</strong> ${bike.tipo} <br>
+            <strong>Precio unitario:</strong> €${bike.precio}
+          </p>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <strong>Fecha:</strong><br>
+          ${orden.fecha}
+        </div>
+        <div class="col-md-4">
+          <strong>Cantidad:</strong><br>
+          ${orden.cantidad}
+        </div>
+        <div class="col-md-4">
+          <strong>Total:</strong><br>
+          <span class="fs-5 fw-bold text-success">€${orden.total}</span>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <a href="${pageContext.request.contextPath}/ordenes" class="btn btn-secondary">
+          <i class="fa-solid fa-arrow-left"></i> Volver a listado
+        </a>
+
+        <c:if test="${sessionScope.usuarioLogueado.rol == 'admin'}">
+          <a href="${pageContext.request.contextPath}/ordenes?action=edit&id=${orden.id}" class="btn btn-warning">
+            <i class="fa-solid fa-pen"></i> Editar Orden
+          </a>
+        </c:if>
+      </div>
     </div>
   </div>
-
-  <div class="card mb-4">
-    <div class="card-header fw-bold">Bicicleta Comprada</div>
-    <div class="card-body">
-      <p><strong>Modelo:</strong> ${bike.modelo}</p>
-      <p><strong>Tipo:</strong> ${bike.tipo}</p>
-      <p><strong>Precio unitario:</strong> €${bike.precio}</p>
-      <p><strong>Cantidad:</strong> ${orden.cantidad}</p>
-      <p class="fw-bold fs-5">Total: €${orden.total}</p>
-    </div>
-  </div>
-
-  <a href="${pageContext.request.contextPath}/ordenes" class="btn btn-secondary">Volver a Órdenes</a>
 </div>
 
 <%@ include file="/includes/footer.jsp" %>

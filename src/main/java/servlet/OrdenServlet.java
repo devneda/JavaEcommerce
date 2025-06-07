@@ -59,10 +59,20 @@ public class OrdenServlet extends HttpServlet {
                         int idBici = Integer.parseInt(req.getParameter("idBici"));
                         req.setAttribute("cliente", clienteDAO.getClienteById(user.getClienteId()));
                         req.setAttribute("bicicleta", bikeDAO.getBikeById(idBici));
-                    } else {
+                    }
+                    req.getRequestDispatcher("/jsp/orden-form.jsp").forward(req, resp);
+                    break;
+
+                case "edit":
+                    if (!"admin".equals(user.getRol())) {
                         resp.sendError(HttpServletResponse.SC_FORBIDDEN);
                         return;
                     }
+                    int idEdit = Integer.parseInt(req.getParameter("id"));
+                    Orden ordenEdit = ordenDAO.getOrdenById(idEdit);
+                    req.setAttribute("orden", ordenEdit);
+                    req.setAttribute("clientes", clienteDAO.getAllClientes());
+                    req.setAttribute("bicicletas", bikeDAO.getAllBikes());
                     req.getRequestDispatcher("/jsp/orden-form.jsp").forward(req, resp);
                     break;
 
@@ -80,11 +90,14 @@ public class OrdenServlet extends HttpServlet {
                     break;
 
                 default:
+                    String query = req.getParameter("query");
                     List<Orden> ordenes;
                     if ("admin".equals(user.getRol())) {
-                        ordenes = ordenDAO.getAllOrdenes();
+                        ordenes = (query != null && !query.trim().isEmpty())
+                                ? ordenDAO.buscarPorClienteOTipo(query)
+                                : ordenDAO.getAllOrdenes();
                     } else {
-                        ordenes = ordenDAO.getOrdenesByCliente(user.getClienteId());
+                        ordenes = ordenDAO.getOrdenesByClienteConJoin(user.getClienteId());
                     }
                     req.setAttribute("ordenes", ordenes);
                     req.getRequestDispatcher("/jsp/ordenes-list.jsp").forward(req, resp);
@@ -99,20 +112,16 @@ public class OrdenServlet extends HttpServlet {
             throws SQLException, ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
         Orden orden = ordenDAO.getOrdenById(id);
-
         if (orden == null) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-
         if (!"admin".equals(user.getRol()) && orden.getClienteId() != user.getClienteId()) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "No autorizado a ver esta orden.");
             return;
         }
-
         Cliente cliente = clienteDAO.getClienteById(orden.getClienteId());
         Bike bike = bikeDAO.getBikeById(orden.getBicicletaId());
-
         req.setAttribute("orden", orden);
         req.setAttribute("cliente", cliente);
         req.setAttribute("bike", bike);
@@ -145,18 +154,26 @@ public class OrdenServlet extends HttpServlet {
             double precioUnitario = Double.parseDouble(req.getParameter("precio"));
             double total = precioUnitario * cantidad;
 
-            Orden orden = new Orden(0, clienteId, bicicletaId, new Date(), cantidad, total);
-            orden.setUsuarioId(user.getId()); // Usuario que realizó el pedido
-
-            ordenDAO.insertOrden(orden);
+            String idParam = req.getParameter("id");
+            if (idParam != null && !idParam.trim().isEmpty()) {
+                // Actualizar orden existente
+                int id = Integer.parseInt(idParam);
+                Orden orden = new Orden(id, clienteId, bicicletaId, new Date(), cantidad, total);
+                orden.setUsuarioId(user.getId());
+                ordenDAO.updateOrden(orden);
+            } else {
+                // Insertar nueva orden
+                Orden orden = new Orden(0, clienteId, bicicletaId, new Date(), cantidad, total);
+                orden.setUsuarioId(user.getId());
+                ordenDAO.insertOrden(orden);
+            }
 
             resp.sendRedirect("ordenes");
 
         } catch (NumberFormatException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parámetros inválidos");
         } catch (SQLException e) {
-            throw new ServletException("Error al guardar la orden", e);
+            throw new ServletException("Error al guardar o actualizar la orden", e);
         }
     }
-
 }

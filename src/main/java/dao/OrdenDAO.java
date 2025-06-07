@@ -14,23 +14,84 @@ public class OrdenDAO {
 
     public List<Orden> getAllOrdenes() throws SQLException {
         List<Orden> ordenes = new ArrayList<>();
-        String sql = "SELECT * FROM ordenes";
+        String sql = "SELECT o.id, o.fecha, o.cantidad, o.total, " +
+                "c.nombre AS cliente_nombre, b.tipo AS bici_tipo " +
+                "FROM ordenes o " +
+                "JOIN clientes c ON o.cliente_id = c.id " +
+                "JOIN bicicletas b ON o.bicicleta_id = b.id " +
+                "ORDER BY o.fecha DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Orden orden = new Orden(
-                        rs.getInt("id"),
-                        rs.getInt("cliente_id"),
-                        rs.getInt("bicicleta_id"),
-                        rs.getTimestamp("fecha"),
-                        rs.getInt("cantidad"),
-                        rs.getDouble("total")
-                );
+                Orden orden = new Orden();
+                orden.setId(rs.getInt("id"));
+                orden.setFecha(rs.getDate("fecha"));
+                orden.setCantidad(rs.getInt("cantidad"));
+                orden.setTotal(rs.getDouble("total"));
+                orden.setClienteNombre(rs.getString("cliente_nombre"));
+                orden.setBiciTipo(rs.getString("bici_tipo"));
                 ordenes.add(orden);
             }
         }
         return ordenes;
+    }
+
+    public List<Orden> getOrdenesByClienteConJoin(int clienteId) throws SQLException {
+        List<Orden> ordenes = new ArrayList<>();
+        String sql = "SELECT o.id, o.fecha, o.cantidad, o.total, " +
+                "c.nombre AS cliente_nombre, b.tipo AS bici_tipo " +
+                "FROM ordenes o " +
+                "JOIN clientes c ON o.cliente_id = c.id " +
+                "JOIN bicicletas b ON o.bicicleta_id = b.id " +
+                "WHERE o.cliente_id = ? ORDER BY o.fecha DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, clienteId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Orden orden = new Orden();
+                orden.setId(rs.getInt("id"));
+                orden.setFecha(rs.getDate("fecha"));
+                orden.setCantidad(rs.getInt("cantidad"));
+                orden.setTotal(rs.getDouble("total"));
+                orden.setClienteNombre(rs.getString("cliente_nombre"));
+                orden.setBiciTipo(rs.getString("bici_tipo"));
+                ordenes.add(orden);
+            }
+        }
+        return ordenes;
+    }
+
+    public List<Orden> buscarPorClienteOTipo(String query) throws SQLException {
+        List<Orden> lista = new ArrayList<>();
+        String sql = "SELECT o.id, o.fecha, o.cantidad, o.total, " +
+                "c.nombre AS cliente_nombre, b.tipo AS bici_tipo " +
+                "FROM ordenes o " +
+                "JOIN clientes c ON o.cliente_id = c.id " +
+                "JOIN bicicletas b ON o.bicicleta_id = b.id " +
+                "WHERE LOWER(c.nombre) LIKE ? OR LOWER(b.tipo) LIKE ? " +
+                "ORDER BY o.fecha DESC";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            String wildcardQuery = "%" + query.toLowerCase() + "%";
+            ps.setString(1, wildcardQuery);
+            ps.setString(2, wildcardQuery);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Orden orden = new Orden();
+                orden.setId(rs.getInt("id"));
+                orden.setFecha(rs.getDate("fecha"));
+                orden.setCantidad(rs.getInt("cantidad"));
+                orden.setTotal(rs.getDouble("total"));
+                orden.setClienteNombre(rs.getString("cliente_nombre"));
+                orden.setBiciTipo(rs.getString("bici_tipo"));
+                lista.add(orden);
+            }
+        }
+        return lista;
     }
 
     public void insertOrden(Orden orden) throws SQLException {
@@ -41,6 +102,19 @@ public class OrdenDAO {
             stmt.setTimestamp(3, new Timestamp(orden.getFecha().getTime()));
             stmt.setInt(4, orden.getCantidad());
             stmt.setDouble(5, orden.getTotal());
+            stmt.executeUpdate();
+        }
+    }
+
+    public void updateOrden(Orden orden) throws SQLException {
+        String sql = "UPDATE ordenes SET cliente_id = ?, bicicleta_id = ?, fecha = ?, cantidad = ?, total = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, orden.getClienteId());
+            stmt.setInt(2, orden.getBicicletaId());
+            stmt.setTimestamp(3, new Timestamp(orden.getFecha().getTime()));
+            stmt.setInt(4, orden.getCantidad());
+            stmt.setDouble(5, orden.getTotal());
+            stmt.setInt(6, orden.getId());
             stmt.executeUpdate();
         }
     }
@@ -59,63 +133,17 @@ public class OrdenDAO {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Orden(
-                            rs.getInt("id"),
-                            rs.getInt("cliente_id"),
-                            rs.getInt("bicicleta_id"),
-                            rs.getTimestamp("fecha"),
-                            rs.getInt("cantidad"),
-                            rs.getDouble("total")
-                    );
+                    Orden orden = new Orden();
+                    orden.setId(rs.getInt("id"));
+                    orden.setClienteId(rs.getInt("cliente_id"));
+                    orden.setBicicletaId(rs.getInt("bicicleta_id"));
+                    orden.setFecha(rs.getTimestamp("fecha"));
+                    orden.setCantidad(rs.getInt("cantidad"));
+                    orden.setTotal(rs.getDouble("total"));
+                    return orden;
                 }
             }
         }
         return null;
     }
-
-    private Orden mapRowToOrden(ResultSet rs) throws SQLException {
-        Orden orden = new Orden(
-                rs.getInt("id"),
-                rs.getInt("cliente_id"),
-                rs.getInt("bicicleta_id"),
-                rs.getDate("fecha"),
-                rs.getInt("cantidad"),
-                rs.getDouble("total")
-        );
-
-        //orden.setUsuarioId(rs.getInt("usuario_id"));
-
-        return orden;
-    }
-
-
-    public List<Orden> getOrdenesByUsuario(int userId) throws SQLException {
-        List<Orden> ordenes = new ArrayList<>();
-        String sql = "SELECT * FROM ordenes WHERE usuario_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    ordenes.add(mapRowToOrden(rs));
-                }
-            }
-        }
-        return ordenes;
-    }
-
-    public List<Orden> getOrdenesByCliente(int clienteId) throws SQLException {
-        List<Orden> ordenes = new ArrayList<>();
-        String sql = "SELECT * FROM ordenes WHERE cliente_id = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, clienteId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    ordenes.add(mapRowToOrden(rs));
-                }
-            }
-        }
-        return ordenes;
-    }
-
 }

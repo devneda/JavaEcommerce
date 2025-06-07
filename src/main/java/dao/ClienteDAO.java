@@ -115,4 +115,30 @@ public class ClienteDAO {
         }
         return null;
     }
+
+    public List<Cliente> buscarPorNombreOCorreo(String query) throws SQLException {
+        List<Cliente> clientes = new ArrayList<>();
+        String sql = "SELECT * FROM clientes WHERE LOWER(nombre) LIKE ? OR LOWER(correo) LIKE ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            String wildcard = "%" + query.toLowerCase() + "%";
+            ps.setString(1, wildcard);
+            ps.setString(2, wildcard);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Cliente cliente = new Cliente();
+                    cliente.setId(rs.getInt("id"));
+                    cliente.setNombre(rs.getString("nombre"));
+                    cliente.setCorreo(rs.getString("correo"));
+                    cliente.setDireccion(rs.getString("direccion"));
+                    cliente.setTelefono(rs.getString("telefono"));
+                    clientes.add(cliente);
+                }
+            }
+        }
+
+        return clientes;
+    }
+
 }

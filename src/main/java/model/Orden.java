@@ -10,10 +10,13 @@ public class Orden {
     private int cantidad;
     private double total;
     private int usuarioId;
+    private String clienteNombre;
+    private String biciTipo;
 
     public Orden() {
     }
 
+    // Constructor usado cuando solo se insertan datos sin clienteNombre/biciTipo
     public Orden(int id, int clienteId, int bicicletaId, Date fecha, int cantidad, double total) {
         this.id = id;
         this.clienteId = clienteId;
@@ -23,7 +26,19 @@ public class Orden {
         this.total = total;
     }
 
-    // Getters y setters
+    // Constructor completo (cuando ya tenemos datos de joins)
+    public Orden(int id, int clienteId, int bicicletaId, Date fecha, int cantidad, double total, String clienteNombre, String biciTipo) {
+        this.id = id;
+        this.clienteId = clienteId;
+        this.bicicletaId = bicicletaId;
+        this.fecha = fecha;
+        this.cantidad = cantidad;
+        this.total = total;
+        this.clienteNombre = clienteNombre;
+        this.biciTipo = biciTipo;
+    }
+
+    // Getters y Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -42,11 +57,12 @@ public class Orden {
     public double getTotal() { return total; }
     public void setTotal(double total) { this.total = total; }
 
-    public int getUsuarioId() {
-        return usuarioId;
-    }
+    public int getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(int usuarioId) { this.usuarioId = usuarioId; }
 
-    public void setUsuarioId(int usuarioId) {
-        this.usuarioId = usuarioId;
-    }
+    public String getClienteNombre() { return clienteNombre; }
+    public void setClienteNombre(String clienteNombre) { this.clienteNombre = clienteNombre; }
+
+    public String getBiciTipo() { return biciTipo; }
+    public void setBiciTipo(String biciTipo) { this.biciTipo = biciTipo; }
 }
