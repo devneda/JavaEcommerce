@@ -10,7 +10,7 @@
 <footer class="footer py-3 text-center bg-light mt-auto">
   <div class="container">
     <span>
-      © 2025 <strong>Trek Bikes Shop</strong> — Rueda con estilo 🚴 |
+      © 2025 <strong>Trek Bikes Shop</strong> — Si paras, te oxidas 🚴 |
       <a href="https://github.com/devneda/JavaEcommerce.git" class="footer-link" target="_blank">GitHub</a> ·
       <a href="#">Términos</a>
     </span>

@@ -29,6 +29,15 @@
         Este modelo incluye componentes de alta gama, diseño aerodinámico y una experiencia de conducción única.
       </p>
 
+      <div class="btn-group" role="group" aria-label="Selector de tallas">
+        <button type="button" class="btn btn-outline-secondary me-2 active" aria-pressed="true">XS</button>
+        <button type="button" class="btn btn-outline-secondary me-2">S</button>
+        <button type="button" class="btn btn-outline-secondary me-2">M</button>
+        <button type="button" class="btn btn-outline-secondary me-2">ML</button>
+        <button type="button" class="btn btn-outline-secondary me-2">L</button>
+        <button type="button" class="btn btn-outline-secondary">XL</button>
+      </div>
+
       <ul class="list-group list-group-flush mb-3">
         <li class="list-group-item"><strong>Tipo:</strong> ${bike.tipo}</li>
         <li class="list-group-item"><strong>Precio:</strong> €${bike.precio}</li>
@@ -50,3 +59,13 @@
     </div>
   </div>
 </div>
+
+<script>
+  const tallaButtons = document.querySelectorAll('.btn-group button');
+  tallaButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tallaButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
