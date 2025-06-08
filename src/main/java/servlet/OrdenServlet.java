@@ -93,9 +93,25 @@ public class OrdenServlet extends HttpServlet {
                     String query = req.getParameter("query");
                     List<Orden> ordenes;
                     if ("admin".equals(user.getRol())) {
+                        int page = 1;
+                        int recordsPerPage = 5;
+                        if (req.getParameter("page") != null) {
+                            page = Integer.parseInt(req.getParameter("page"));
+                        }
+                        int offset = (page - 1) * recordsPerPage;
+
                         ordenes = (query != null && !query.trim().isEmpty())
-                                ? ordenDAO.buscarPorClienteOTipo(query)
+                                ? ordenDAO.buscarPorClienteOTipoPaginado(query, offset, recordsPerPage)
                                 : ordenDAO.getAllOrdenes();
+
+                        int totalRecords = (query != null && !query.trim().isEmpty())
+                                ? ordenDAO.countBuscarPorClienteOTipo(query)
+                                : ordenDAO.getAllOrdenes().size();
+                        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+
+                        req.setAttribute("currentPage", page);
+                        req.setAttribute("totalPages", totalPages);
+                        req.setAttribute("query", query);
                     } else {
                         ordenes = ordenDAO.getOrdenesByClienteConJoin(user.getClienteId());
                     }

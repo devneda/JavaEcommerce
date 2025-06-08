@@ -146,4 +146,51 @@ public class OrdenDAO {
         }
         return null;
     }
+
+    public List<Orden> buscarPorClienteOTipoPaginado(String query, int offset, int limit) throws SQLException {
+        List<Orden> lista = new ArrayList<>();
+        String sql = "SELECT o.id, o.fecha, o.cantidad, o.total, " +
+                "c.nombre AS cliente_nombre, b.tipo AS bici_tipo " +
+                "FROM ordenes o " +
+                "JOIN clientes c ON o.cliente_id = c.id " +
+                "JOIN bicicletas b ON o.bicicleta_id = b.id " +
+                "WHERE LOWER(c.nombre) LIKE ? OR LOWER(b.tipo) LIKE ? " +
+                "ORDER BY o.fecha DESC LIMIT ? OFFSET ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            String wildcardQuery = "%" + query.toLowerCase() + "%";
+            ps.setString(1, wildcardQuery);
+            ps.setString(2, wildcardQuery);
+            ps.setInt(3, limit);
+            ps.setInt(4, offset);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Orden orden = new Orden();
+                orden.setId(rs.getInt("id"));
+                orden.setFecha(rs.getDate("fecha"));
+                orden.setCantidad(rs.getInt("cantidad"));
+                orden.setTotal(rs.getDouble("total"));
+                orden.setClienteNombre(rs.getString("cliente_nombre"));
+                orden.setBiciTipo(rs.getString("bici_tipo"));
+                lista.add(orden);
+            }
+        }
+        return lista;
+    }
+
+    public int countBuscarPorClienteOTipo(String query) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM ordenes o " +
+                "JOIN clientes c ON o.cliente_id = c.id " +
+                "JOIN bicicletas b ON o.bicicleta_id = b.id " +
+                "WHERE LOWER(c.nombre) LIKE ? OR LOWER(b.tipo) LIKE ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String wildcardQuery = "%" + query.toLowerCase() + "%";
+            stmt.setString(1, wildcardQuery);
+            stmt.setString(2, wildcardQuery);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
 }
