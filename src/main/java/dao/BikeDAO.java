@@ -123,4 +123,50 @@ public class BikeDAO {
         }
         return lista;
     }
+
+    public List<Bike> buscarPorModeloOTipoPaginado(String query, int offset, int limit) throws SQLException {
+        List<Bike> lista = new ArrayList<>();
+        String sql = "SELECT * FROM bicicletas WHERE LOWER(modelo) LIKE ? OR LOWER(tipo) LIKE ? LIMIT ? OFFSET ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            String wildcardQuery = "%" + query.toLowerCase() + "%";
+            ps.setString(1, wildcardQuery);
+            ps.setString(2, wildcardQuery);
+            ps.setInt(3, limit);
+            ps.setInt(4, offset);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                lista.add(mapRowToBike(rs));
+            }
+        }
+        return lista;
+    }
+
+
+    public int countFilteredBikes(String keyword) throws SQLException {
+            String sql = "SELECT COUNT(*) FROM bicicletas WHERE modelo LIKE ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, "%" + keyword + "%");
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+            return 0;
+        }
+
+    public int countBuscarPorModeloOTipo(String query) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM bicicletas WHERE LOWER(modelo) LIKE ? OR LOWER(tipo) LIKE ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String wildcardQuery = "%" + query.toLowerCase() + "%";
+            stmt.setString(1, wildcardQuery);
+            stmt.setString(2, wildcardQuery);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+
 }
+

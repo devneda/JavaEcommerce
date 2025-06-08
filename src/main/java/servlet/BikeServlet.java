@@ -59,16 +59,24 @@ public class BikeServlet extends HttpServlet {
     private void listBikes(HttpServletRequest req, HttpServletResponse resp)
             throws SQLException, ServletException, IOException {
 
-        String query = req.getParameter("query");
-        List<Bike> lista;
-
-        if (query != null && !query.trim().isEmpty()) {
-            lista = bikeDAO.buscarPorModeloOTipo(query);
-        } else {
-            lista = bikeDAO.getAllBikes();
+        String query = req.getParameter("query") != null ? req.getParameter("query") : "";
+        int page = 1;
+        int recordsPerPage = 5;
+        if (req.getParameter("page") != null) {
+            page = Integer.parseInt(req.getParameter("page"));
         }
 
+        int offset = (page - 1) * recordsPerPage;
+
+        List<Bike> lista = bikeDAO.buscarPorModeloOTipoPaginado(query, offset, recordsPerPage);
+        int totalRecords = bikeDAO.countBuscarPorModeloOTipo(query);
+        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+
         req.setAttribute("bikes", lista);
+        req.setAttribute("currentPage", page);
+        req.setAttribute("totalPages", totalPages);
+        req.setAttribute("query", query);
+
         req.getRequestDispatcher("/jsp/bikes-list.jsp").forward(req, resp);
     }
 
