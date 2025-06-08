@@ -139,6 +139,37 @@ public class ClienteDAO {
         }
 
         return clientes;
+        }
+
+    public List<Cliente> buscarPorNombreOCorreoPaginado(String query, int offset, int limit) throws SQLException {
+        List<Cliente> clientes = new ArrayList<>();
+        String sql = "SELECT * FROM clientes WHERE LOWER(nombre) LIKE ? OR LOWER(correo) LIKE ? LIMIT ? OFFSET ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            String wildcard = "%" + query.toLowerCase() + "%";
+            ps.setString(1, wildcard);
+            ps.setString(2, wildcard);
+            ps.setInt(3, limit);
+            ps.setInt(4, offset);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    clientes.add(mapRowToCliente(rs));
+                }
+            }
+        }
+        return clientes;
     }
 
+    public int countBuscarPorNombreOCorreo(String query) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM clientes WHERE LOWER(nombre) LIKE ? OR LOWER(correo) LIKE ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String wildcard = "%" + query.toLowerCase() + "%";
+            stmt.setString(1, wildcard);
+            stmt.setString(2, wildcard);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
 }

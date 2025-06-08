@@ -60,16 +60,24 @@ public class ClienteServlet extends HttpServlet {
 
     private void listClientes(HttpServletRequest req, HttpServletResponse resp)
             throws SQLException, ServletException, IOException {
-        String query = req.getParameter("query");
-        List<Cliente> clientes;
-
-        if (query != null && !query.trim().isEmpty()) {
-            clientes = clienteDAO.buscarPorNombreOCorreo(query);
-        } else {
-            clientes = clienteDAO.getAllClientes();
+        String query = req.getParameter("query") != null ? req.getParameter("query") : "";
+        int page = 1;
+        int recordsPerPage = 5;
+        if (req.getParameter("page") != null) {
+            page = Integer.parseInt(req.getParameter("page"));
         }
 
+        int offset = (page - 1) * recordsPerPage;
+
+        List<Cliente> clientes = clienteDAO.buscarPorNombreOCorreoPaginado(query, offset, recordsPerPage);
+        int totalRecords = clienteDAO.countBuscarPorNombreOCorreo(query);
+        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+
         req.setAttribute("clientes", clientes);
+        req.setAttribute("currentPage", page);
+        req.setAttribute("totalPages", totalPages);
+        req.setAttribute("query", query);
+
         req.getRequestDispatcher("/jsp/clientes-list.jsp").forward(req, resp);
     }
 

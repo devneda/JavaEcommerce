@@ -63,4 +63,18 @@
   </div>
 </div>
 
+
+<div class="d-flex justify-content-center mt-4">
+  <nav>
+    <ul class="pagination">
+      <c:forEach begin="1" end="${totalPages}" var="i">
+        <li class="page-item ${i == currentPage ? 'active' : ''}">
+          <a class="page-link" href="clientes?page=${i}&query=${query}">${i}</a>
+        </li>
+      </c:forEach>
+    </ul>
+  </nav>
+</div>
+
+
 <%@ include file="/includes/footer.jsp" %>
