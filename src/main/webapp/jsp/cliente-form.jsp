@@ -24,26 +24,23 @@
 
     <div class="col-md-6">
       <label for="nombre" class="form-label">Nombre</label>
-      <input type="text" class="form-control" id="nombre" name="nombre"
-             value="${editar ? cliente.nombre : ''}" required>
+      <input type="text" class="form-control" id="nombre" name="nombre" value="${cliente != null ? cliente.nombre : ''}" required>
     </div>
 
     <div class="col-md-6">
       <label for="email" class="form-label">Correo Electrónico</label>
-      <input type="email" class="form-control" id="email" name="email"
+      <input type="email" class="form-control" id="email" name="correo"
              value="${editar ? cliente.correo : ''}" required>
     </div>
 
     <div class="col-md-6">
       <label for="direccion" class="form-label">Dirección</label>
-      <input type="text" class="form-control" id="direccion" name="direccion"
-             value="${editar ? cliente.direccion : ''}">
+      <input type="text" class="form-control" id="direccion" name="direccion" value="${cliente != null ? cliente.direccion : ''}">
     </div>
 
     <div class="col-md-6">
       <label for="telefono" class="form-label">Teléfono</label>
-      <input type="text" class="form-control" id="telefono" name="telefono"
-             value="${editar ? cliente.telefono : ''}">
+      <input type="text" class="form-control" id="telefono" name="telefono" value="${cliente != null ? cliente.telefono : ''}">
     </div>
 
     <div class="col-12">

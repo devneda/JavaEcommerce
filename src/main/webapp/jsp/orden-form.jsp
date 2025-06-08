@@ -97,6 +97,10 @@
 
     <!-- Botón enviar -->
     <div class="col-md-12 d-flex justify-content-end">
+      <a href="${pageContext.request.contextPath}/ordenes" class="btn btn-outline-secondary me-2">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+      </a>
+
       <button type="submit" class="btn btn-primary">
         <i class="fa-solid fa-cart-plus"></i> ${orden != null ? "Actualizar" : "Guardar"} Orden
       </button>

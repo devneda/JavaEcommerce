@@ -2,6 +2,8 @@ package servlet;
 
 import dao.UsuarioDAO;
 import model.Usuario;
+import model.Cliente;
+import dao.ClienteDAO;
 import utils.DBConnection;
 
 import javax.servlet.annotation.WebServlet;
@@ -46,6 +48,24 @@ public class LoginServlet extends HttpServlet {
 
             if (user != null && BCrypt.checkpw(password, user.getPasswordHash())) {
                 HttpSession session = req.getSession();
+                if ("cliente".equals(user.getRol())) {
+                    ClienteDAO clienteDAO = new ClienteDAO(DBConnection.getConnection());
+                    Cliente existente = clienteDAO.getClienteByEmail(user.getEmail());
+
+                    if (existente == null) {
+                        Cliente nuevo = new Cliente();
+                        nuevo.setNombre(user.getUsername());
+                        nuevo.setCorreo(user.getEmail());
+                        nuevo.setDireccion("No especificada");
+                        nuevo.setTelefono("N/A");
+
+                        clienteDAO.insertCliente(nuevo);
+                        int clienteId = clienteDAO.getLastInsertId();
+                        user.setClienteId(clienteId);
+                    } else {
+                        user.setClienteId(existente.getId());
+                    }
+                }
                 session.setAttribute("usuarioLogueado", user);
                 resp.sendRedirect(req.getContextPath() + "/index.jsp");
             } else {

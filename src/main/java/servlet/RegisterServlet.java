@@ -57,8 +57,8 @@ public class RegisterServlet extends HttpServlet {
                     cliente.setDireccion("");
                     cliente.setTelefono("");
                     clienteDAO.insertCliente(cliente);
+                    clienteId = clienteDAO.getLastInsertId();
                 }
-                clienteId = cliente.getId();
             } catch (SQLException e) {
                 throw new ServletException("Error al verificar/crear cliente", e);
             }
